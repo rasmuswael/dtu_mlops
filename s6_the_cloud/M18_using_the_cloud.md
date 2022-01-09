@@ -67,17 +67,32 @@ We are now going to start actually using the cloud.
    gcloud beta compute ssh --zone <zone> <name> --project <project-name> 
    ```
 
-6. While logged into the instance you will see that neither python or pytorch is installed. 
+6. While logged into the instance, check if Python and Pytorch is installed? 
+   You should see that neither is installed. The VM we have only specified what
+   compute resources it should have, and not what software should be in it. We 
+   can fix this by starting VMs based on specific docker images (its all coming together).
 
-```
-gcloud compute instances create %INSTANCE_NAME% \
-  --zone=%ZONE% 
-  --image-family=%IMAGE_FAMILY% 
-  --image-project=deeplearning-platform-release
-```
+   1. `gcp` Comes with a number of ready-to-go images for doing deep learning.
+      More info can be found [here](https://cloud.google.com/deep-learning-containers/docs/choosing-container).
+      Try, running this line:
+      ```bash
+      gcloud container images list --repository="gcr.io/deeplearning-platform-release"
+      ```
+      what does the output show?
 
-7. Finally, everything that you have done locally can also be achieved through the web terminal, which of cause
-   comes pre-installed with the `gcloud` command etc. 
+   2. Next, start (in the terminal) a new instance using a Pytorch image. The
+      command for doing it should look something like this:
+      ```bash
+      gcloud compute instances create %INSTANCE_NAME% \
+      --zone=%ZONE% 
+      --image-family=%IMAGE_FAMILY% 
+      --image-project=deeplearning-platform-release
+      ```
+
+   3. ssh to 
+
+7. Finally, everything that you have done locally can also be achieved through the web 
+   terminal, which of cause comes pre-installed with the `gcloud` command etc. 
    <p align="center">
      <img src="../figures/gcp_terminal.PNG" width="800" title="hover text">
    </p>
@@ -114,7 +129,7 @@ We are going to follow the instructions from this [page](https://dvc.org/doc/use
    pip install dvc[gs]
    ```
 
-3. Now in your mnist reposatory where you have already configured dvc, we are going to change the storage from our google drive to our newly created google cloud storage.
+3. Now in your mnist repository where you have already configured dvc, we are going to change the storage from our google drive to our newly created google cloud storage.
    ```bash
    dvc remote add -d remote_storage <output-from-gsutils>
    ```
@@ -187,11 +202,11 @@ but replaced with an python example.
       DO NOT SHARE this file with anybody. If you know anything about cryptography, this is your
       private key.
 
-3. Next we are going to work on a simple example. Please **fork** [this reposatory](https://github.com/SkafteNicki/gcp_docker_example). The reposatory contains a simple python script that does image classification using sklearn.
+3. Next we are going to work on a simple example. Please **fork** [this repository](https://github.com/SkafteNicki/gcp_docker_example). The repository contains a simple python script that does image classification using sklearn.
 
    1. Checkout the code and make sure you know what it does.
 
-   2. Now we are going to add secrets to the github reposatory such that it "can talk" to our service account and our
+   2. Now we are going to add secrets to the github repository such that it "can talk" to our service account and our
       google cloud resources. Go to the secrets tab and begin to add the following:
       <p align="center">
         <img src="../figures/github_gcp.PNG" width="800" title="hover text">
@@ -201,6 +216,11 @@ but replaced with an python example.
       * GCP_CREDENTIALS: this should be the content of the `.json` file you downloaded after creating the service account
       * GCP_EMAIL: this should be the email belonging to your service. It will be called something like: `<service-name>@<project-name>.iam.gserviceaccount.com` and can be seen on the service front page.
       * GCP_PROJECT_ID: you should be able to find this on the front webpage.
+
+4. Finally, figure out how to pull the image that was automatically build to your local computer.
+   This [page](https://cloud.google.com/container-registry/docs/pushing-and-pulling#pulling_images_from_a_registry)
+   should help you.
+
 
 ## Training 
 
